@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import RateLimitedUI from "../components/RateLimitedUI"
-import axios from 'axios'
 import toast from 'react-hot-toast'
 import NoteCard from '../components/NoteCard'
+import api from '../lib/axios'
 
 const HomePage = () => {
-  const [isRateLimited, setIsRateLimited] = useState(true)
-  const [notes, setnotes] = useState([])
-  const [Loading, setLoading] = useState(true)
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchnotes = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/notes")
-        console.log(res.data)
-        setnotes(res.data)
-        setIsRateLimited(false)
+        const res = await api.get("/notes")
+        console.log(res.data);
+        setNotes(res.data);
+        setIsRateLimited(false);
       } catch (error) {
-        console.error("Error fetching notes");
+        console.log("Error fetching notes");
+        console.log(error.response);
         if (error.response?.status === 429) {
-          setIsRateLimited(true)
+          setIsRateLimited(true);
         } else {
-          toast.error("Failed to load notes. Please try again later.")
+          toast.error("Failed to load notes");
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
 
@@ -42,7 +43,7 @@ const HomePage = () => {
         {notes.length > 0 && !isRateLimited && (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {notes.map((note) => (
-              <NoteCard key={note._id || note.id} note={note} />
+              <NoteCard key={note._id} note={note} setNotes={setNotes} />
             ))}
           </div>
         )}
