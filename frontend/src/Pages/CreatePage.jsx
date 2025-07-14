@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, LoaderIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +10,12 @@ const CreatePage = () => {
 	const [loading, setLoading] = useState(false);
 
 	const navigate = useNavigate()
+
+	if(loading) {
+    return <div className='min-h-screen bg-base-200 flex items-center justify-center'>
+      <LoaderIcon className='size-10 animate-spin text-primary' />
+    </div>
+  }
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
