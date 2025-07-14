@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 import notesRoutes from './routes/notesRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import connectDB from './config/db.js';
+import userDb from './config/userDb.js';
 import ratelimiter from './middleware/ratelimiter.js';
 import { env } from 'process';
 
@@ -28,9 +30,10 @@ app.use(ratelimiter);
 //   next();
 // });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 
-if(process,env.NODE_ENV === "production") {
+if(process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")))
 
   app.get("*", (req, res) => {
@@ -39,8 +42,10 @@ if(process,env.NODE_ENV === "production") {
 }
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log('Server is running on PORT:', PORT);
+  userDb().then(() => {
+    app.listen(PORT, () => {
+      console.log('Server is running on PORT:', PORT);
+    });
   });
 });
 

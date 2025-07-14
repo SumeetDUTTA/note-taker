@@ -7,12 +7,14 @@ import {
   getNoteById
 } from '../controllers/notesControllers.js';
 
+import { verifyToken } from '../middleware/auth.js';
+
 const router = express.Router();
 
-router.get("/", getAllNotes);
-router.get("/:id", getNoteById);
-router.post("/", createNote);
-router.put("/:id", updateNote);
-router.delete("/:id", deleteNote);
+router.get("/", verifyToken, getAllNotes);
+router.get("/:id", verifyToken, getNoteById);
+router.post("/", verifyToken, createNote);
+router.put("/:id", verifyToken, updateNote);
+router.delete("/:id", verifyToken, deleteNote);
 
 export default router;
