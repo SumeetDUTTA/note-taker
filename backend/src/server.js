@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 
-import notesRoutes from './routes/notesroutes.js';
+import notesRoutes from './routes/notesRoutes.js';
 import connectDB from './config/db.js';
 import ratelimiter from './middleware/ratelimiter.js';
 import { env } from 'process';
