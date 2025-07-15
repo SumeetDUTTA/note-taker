@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, LoaderIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 
 const CreatePage = () => {
@@ -26,12 +26,12 @@ const CreatePage = () => {
 
 		setLoading(true);
 		try {
-			await api.post("/notes", {
+			const res = await api.post("/notes", {
 				title,
 				content
 			})
 			toast.success("Note created successfuly")
-			navigate("/")
+			navigate("/", { state: { newNote: res.data } });
 		} catch (error) {
 			console.error("Error creating note:", error)
 			if(error.response.status === 429) {
@@ -48,7 +48,8 @@ const CreatePage = () => {
 	}
 
 	return (
-		<div className='min-h-screen bg-base-200'>
+		<div className='min-h-screen bg-transparent'>
+			<div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#00FF9D40_100%)]" />
 			<div className='container mx-auto px-4 py-8'>
 				<div className='max-w-2xl mx-auto'>
 					<Link to={"/"} className="btn btn-ghost mb-6">

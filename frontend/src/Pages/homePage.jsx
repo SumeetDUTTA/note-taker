@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from '../components/Navbar'
 import RateLimitedUI from "../components/RateLimitedUI"
 import toast from 'react-hot-toast'
@@ -12,16 +13,25 @@ const HomePage = () => {
   const [notes, setNotes] = useState([]);
   const [Loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     const fetchnotes = async () => {
       try {
-        const res = await api.get("/notes")
-        console.log(res.data);
+        const res = await api.get("/notes");
+        // console.log("Fetched notes:", res.data);
         setNotes(res.data);
         setIsRateLimited(false);
       } catch (error) {
         console.log("Error fetching notes");
         console.log(error.response);
+        if ([401, 403].includes(error.response?.status)) {
+          localStorage.removeItem("token");
+          api.defaults.headers.common["Authorization"] = "";
+          return navigate("/login");
+        }
+        toast.error("Failed to load notes");
         if (error.response?.status === 429) {
           setIsRateLimited(true);
         } else {
@@ -33,7 +43,16 @@ const HomePage = () => {
     };
 
     fetchnotes();
-  }, []);
+  }, [navigate]);
+
+  useEffect( () => {
+    const newNote = location.state?.newNote;
+    if (newNote) {
+      console.log("New note added:", newNote);
+      setNotes(prev => [newNote, ...prev]);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   if(Loading) {
     return <div className='min-h-screen bg-base-200 flex items-center justify-center'>

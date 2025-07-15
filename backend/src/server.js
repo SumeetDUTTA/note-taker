@@ -1,6 +1,9 @@
+import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 
 import notesRoutes from './routes/notesRoutes.js';
@@ -10,8 +13,6 @@ import userDb from './config/userDb.js';
 import ratelimiter from './middleware/ratelimiter.js';
 import { env } from 'process';
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const __dirname = path.resolve()
@@ -19,6 +20,9 @@ const __dirname = path.resolve()
 if (process.env.NODE_ENV !== "production") {
   app.use(cors({
     origin: 'http://localhost:5173',
+    methods: ["GET","POST","PUT","DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   }))
 }
 

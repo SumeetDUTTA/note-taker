@@ -1,9 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-export const verifyToken = (req, res, next) => {
-    const authHeader = req.headers.autherization;
+const JWT_SECRET = process.env.JWT_SECRET;
 
-    if(!authHeader) {
+// console.log("auth.js sees JWT_SECRET =", JWT_SECRET);
+
+export const verifyToken = (req, res, next) => {
+
+    // console.log("🔐 authHeader:", req.headers.authorization);
+    const authHeader = req.headers.authorization;
+
+    if(!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({message: "Access denied, no token provided."});
     }
 
